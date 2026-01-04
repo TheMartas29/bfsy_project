@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./index.css";
 
+import en from "./lang/en.json";
+import cs from "./lang/cs.json";
+
 const INITIAL_DATA = {
   title: "My shopping list 1",
   items: [
@@ -24,7 +27,12 @@ export default function ShoppingListDetail() {
   const [membersOpen, setMembersOpen] = useState(false);
   const [newMember, setNewMember] = useState("");
 
-  // rename shopping listu + keyboard focus
+  // ✅ language from localStorage (set in Overview)
+  const [lang, setLang] = useState(() => localStorage.getItem("lang") || "en");
+  const texts = lang === "en" ? en : cs;
+  const t = (key) => texts[key] ?? key;
+
+  // ✅ focus on rename input
   useEffect(() => {
     if (isRenaming && titleInputRef.current) {
       titleInputRef.current.focus();
@@ -32,14 +40,23 @@ export default function ShoppingListDetail() {
     }
   }, [isRenaming]);
 
-  // ulozeni renamu
+  // ✅ reload language when user returns from Overview and changes it
+  // (This helps mainly if app stays mounted in memory.)
+  useEffect(() => {
+    const checkLang = () => {
+      setLang(localStorage.getItem("lang") || "en");
+    };
+
+    window.addEventListener("focus", checkLang);
+    return () => window.removeEventListener("focus", checkLang);
+  }, []);
+
   const saveRename = () => {
     if (!tempTitle.trim()) return;
     setData({ ...data, title: tempTitle });
     setIsRenaming(false);
   };
 
-  // oznaceni jako done / undone
   const toggle = (id) => {
     setData({
       ...data,
@@ -49,7 +66,6 @@ export default function ShoppingListDetail() {
     });
   };
 
-  // odstraneni itemu ze seznamu
   const removeItem = (id) => {
     setData({
       ...data,
@@ -57,7 +73,6 @@ export default function ShoppingListDetail() {
     });
   };
 
-  // pridani itemu do seznamu
   const addItem = () => {
     if (!newItem.trim()) return;
 
@@ -68,7 +83,6 @@ export default function ShoppingListDetail() {
     setNewItem("");
   };
 
-  // pridani membra
   const addMember = () => {
     if (!newMember.trim()) return;
 
@@ -80,7 +94,6 @@ export default function ShoppingListDetail() {
     setNewMember("");
   };
 
-  // odstraneni membra
   const removeMember = (name) => {
     setData({
       ...data,
@@ -88,14 +101,13 @@ export default function ShoppingListDetail() {
     });
   };
 
-  // filtrace dat
   const todo = data.items.filter((x) => !x.done);
   const done = data.items.filter((x) => x.done);
 
   return (
     <div className="page responsive-align">
       <Link to="/" className="back back-top">
-        ← Back
+        ← {t("back")}
       </Link>
 
       <header className="header">
@@ -126,7 +138,7 @@ export default function ShoppingListDetail() {
                   setMenuOpen(false);
                 }}
               >
-                Rename ✏️
+                {t("rename")} ✏️
               </div>
 
               <div
@@ -136,7 +148,7 @@ export default function ShoppingListDetail() {
                   setMenuOpen(false);
                 }}
               >
-                Members 👥
+                {t("members")} 👥
               </div>
             </div>
           )}
@@ -144,7 +156,7 @@ export default function ShoppingListDetail() {
       </header>
 
       <section className="section">
-        <h3>TODO</h3>
+        <h3>{t("todo")}</h3>
 
         {todo.map((item) => (
           <div className="item-row" key={item.id}>
@@ -166,7 +178,7 @@ export default function ShoppingListDetail() {
         <div className="add-row">
           <button className="plus">＋</button>
           <input
-            placeholder="Add new"
+            placeholder={t("addNew")}
             value={newItem}
             onChange={(e) => setNewItem(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addItem()}
@@ -176,7 +188,7 @@ export default function ShoppingListDetail() {
 
       {done.length > 0 && (
         <section className="section">
-          <h3>Completed</h3>
+          <h3>{t("completed")}</h3>
 
           {done.map((item) => (
             <div className="item-row done" key={item.id}>
@@ -203,7 +215,7 @@ export default function ShoppingListDetail() {
       {membersOpen && (
         <div className="modal-overlay">
           <div className="modal">
-            <h2>Members</h2>
+            <h2>{t("members")}</h2>
 
             {data.members.map((m) => (
               <div key={m} className="item-row">
@@ -219,14 +231,14 @@ export default function ShoppingListDetail() {
 
             <div className="add-row modal-add">
               <input
-                placeholder="Add member"
+                placeholder={t("addMember")}
                 value={newMember}
                 onChange={(e) => setNewMember(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && addMember()}
                 className="modal-input"
               />
               <button className="btn small" onClick={addMember}>
-                Add
+                {t("add")}
               </button>
             </div>
 
@@ -235,7 +247,7 @@ export default function ShoppingListDetail() {
                 className="btn secondary wide"
                 onClick={() => setMembersOpen(false)}
               >
-                Close
+                {t("close")}
               </button>
             </div>
           </div>

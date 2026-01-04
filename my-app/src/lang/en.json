@@ -1,0 +1,27 @@
+{
+  "appTitle": "Shopping List App",
+  "active": "Active",
+  "archived": "Archived",
+  "createdOn": "created on",
+
+  "createNewList": "Create new list",
+  "listTitle": "List title",
+  "myShoppingList": "My shopping list",
+  "create": "Create",
+  "cancel": "Cancel",
+
+  "archiveListQuestion": "Archive list?",
+  "archiveListTextStart": "This will move",
+  "archiveListTextEnd": "to Archived.",
+  "archive": "Archive",
+
+  "back": "Back",
+  "rename": "Rename",
+  "members": "Members",
+  "todo": "TODO",
+  "completed": "Completed",
+  "addNew": "Add new",
+  "addMember": "Add member",
+  "add": "Add",
+  "close": "Close"
+}

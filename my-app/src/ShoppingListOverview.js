@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./index.css";
 
+import en from "./lang/en.json";
+import cs from "./lang/cs.json";
+
 const currentUser = "User 1 (me)";
 
 const INITIAL_LISTS = [
@@ -45,6 +48,12 @@ export default function ShoppingListOverview() {
   const [listToDelete, setListToDelete] = useState(null);
   const [newTitle, setNewTitle] = useState("");
 
+  // ✅ language stored globally (for Overview + Detail)
+  const [lang, setLang] = useState(() => localStorage.getItem("lang") || "en");
+
+  const texts = lang === "en" ? en : cs;
+  const t = (key) => texts[key] ?? key;
+
   const activeLists = lists.filter((l) => !l.archived);
   const archivedLists = lists.filter((l) => l.archived);
 
@@ -80,12 +89,27 @@ export default function ShoppingListOverview() {
     setListToDelete(null);
   };
 
+  const toggleLang = () => {
+    setLang((prev) => {
+      const next = prev === "en" ? "cs" : "en";
+      localStorage.setItem("lang", next);
+      return next;
+    });
+  };
+
   return (
     <div className="page list-page">
-      <h1 className="app-title">Shopping List App</h1>
+      {/* ✅ top bar with language toggle button */}
+      <div className="overview-topbar">
+        <h1 className="app-title">{t("appTitle")}</h1>
+
+        <button className="lang-btn" onClick={toggleLang}>
+          {lang === "en" ? "EN" : "CZ"}
+        </button>
+      </div>
 
       <section className="list-section">
-        <h2 className="section-title">Active</h2>
+        <h2 className="section-title">{t("active")}</h2>
 
         <div className="card-grid">
           {activeLists.map((list) => (
@@ -96,7 +120,9 @@ export default function ShoppingListOverview() {
 
               <div className="card-footer">
                 <span className="card-owner">{list.owner}</span>
-                <span className="card-date">created on {list.createdAt}</span>
+                <span className="card-date">
+                  {t("createdOn")} {list.createdAt}
+                </span>
               </div>
 
               {list.owner === currentUser && (
@@ -113,7 +139,7 @@ export default function ShoppingListOverview() {
       </section>
 
       <section className="list-section">
-        <h2 className="section-title">Archived</h2>
+        <h2 className="section-title">{t("archived")}</h2>
 
         <div className="card-grid">
           {archivedLists.map((list) => (
@@ -124,7 +150,9 @@ export default function ShoppingListOverview() {
 
               <div className="card-footer">
                 <span className="card-owner">{list.owner}</span>
-                <span className="card-date">created on {list.createdAt}</span>
+                <span className="card-date">
+                  {t("createdOn")} {list.createdAt}
+                </span>
               </div>
             </div>
           ))}
@@ -138,13 +166,13 @@ export default function ShoppingListOverview() {
       {isCreateOpen && (
         <div className="modal-overlay">
           <div className="modal">
-            <h2>Create new list</h2>
+            <h2>{t("createNewList")}</h2>
 
             <label className="modal-label">
-              List title
+              {t("listTitle")}
               <input
                 className="modal-input"
-                placeholder="My shopping list"
+                placeholder={t("myShoppingList")}
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && createList()}
@@ -153,13 +181,13 @@ export default function ShoppingListOverview() {
 
             <div className="modal-buttons">
               <button className="btn" onClick={createList}>
-                Create
+                {t("create")}
               </button>
               <button
                 className="btn secondary"
                 onClick={() => setIsCreateOpen(false)}
               >
-                Cancel
+                {t("cancel")}
               </button>
             </div>
           </div>
@@ -169,20 +197,22 @@ export default function ShoppingListOverview() {
       {listToDelete && (
         <div className="modal-overlay">
           <div className="modal">
-            <h2>Archive list?</h2>
+            <h2>{t("archiveListQuestion")}</h2>
             <p>
-              This will move <strong>{listToDelete.title}</strong> to Archived.
+              {t("archiveListTextStart")}{" "}
+              <strong>{listToDelete.title}</strong>{" "}
+              {t("archiveListTextEnd")}
             </p>
 
             <div className="modal-buttons">
               <button className="btn danger" onClick={deleteList}>
-                Archive
+                {t("archive")}
               </button>
               <button
                 className="btn secondary"
                 onClick={() => setListToDelete(null)}
               >
-                Cancel
+                {t("cancel")}
               </button>
             </div>
           </div>

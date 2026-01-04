@@ -1,0 +1,27 @@
+{
+  "appTitle": "Aplikace nákupních seznamů",
+  "active": "Aktivní",
+  "archived": "Archivované",
+  "createdOn": "vytvořeno",
+
+  "createNewList": "Vytvořit nový seznam",
+  "listTitle": "Název seznamu",
+  "myShoppingList": "Můj nákupní seznam",
+  "create": "Vytvořit",
+  "cancel": "Zrušit",
+
+  "archiveListQuestion": "Archivovat seznam?",
+  "archiveListTextStart": "Tímto přesunete",
+  "archiveListTextEnd": "do archivu.",
+  "archive": "Archivovat",
+
+  "back": "Zpět",
+  "rename": "Přejmenovat",
+  "members": "Členové",
+  "todo": "K NÁKUPU",
+  "completed": "Hotovo",
+  "addNew": "Přidat položku",
+  "addMember": "Přidat člena",
+  "add": "Přidat",
+  "close": "Zavřít"
+}
