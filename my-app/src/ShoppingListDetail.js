@@ -15,24 +15,60 @@ const INITIAL_DATA = {
   members: ["Anna", "Roman", "Peter"]
 };
 
+function getSystemTheme() {
+  return window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
+function applyTheme(themeSetting) {
+  const finalTheme = themeSetting === "system" ? getSystemTheme() : themeSetting;
+
+  document.body.classList.remove("theme-light", "theme-dark");
+  document.body.classList.add(`theme-${finalTheme}`);
+}
+
 export default function ShoppingListDetail() {
   const [data, setData] = useState(INITIAL_DATA);
   const [newItem, setNewItem] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
-
   const [isRenaming, setIsRenaming] = useState(false);
   const [tempTitle, setTempTitle] = useState(data.title);
   const titleInputRef = useRef(null);
-
   const [membersOpen, setMembersOpen] = useState(false);
   const [newMember, setNewMember] = useState("");
-
-  // ✅ language from localStorage (set in Overview)
   const [lang, setLang] = useState(() => localStorage.getItem("lang") || "en");
   const texts = lang === "en" ? en : cs;
   const t = (key) => texts[key] ?? key;
+  const [themeSetting, setThemeSetting] = useState(
+    () => localStorage.getItem("theme") || "system"
+  );
 
-  // ✅ focus on rename input
+  useEffect(() => {
+    applyTheme(themeSetting);
+  }, [themeSetting]);
+
+  useEffect(() => {
+    if (!window.matchMedia) return;
+
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleChange = () => {
+      if (themeSetting === "system") {
+        applyTheme("system");
+      }
+    };
+
+    if (mq.addEventListener) {
+      mq.addEventListener("change", handleChange);
+      return () => mq.removeEventListener("change", handleChange);
+    } else {
+      mq.addListener(handleChange);
+      return () => mq.removeListener(handleChange);
+    }
+  }, [themeSetting]);
+
   useEffect(() => {
     if (isRenaming && titleInputRef.current) {
       titleInputRef.current.focus();
@@ -40,15 +76,14 @@ export default function ShoppingListDetail() {
     }
   }, [isRenaming]);
 
-  // ✅ reload language when user returns from Overview and changes it
-  // (This helps mainly if app stays mounted in memory.)
   useEffect(() => {
-    const checkLang = () => {
+    const reloadSettings = () => {
       setLang(localStorage.getItem("lang") || "en");
+      setThemeSetting(localStorage.getItem("theme") || "system");
     };
 
-    window.addEventListener("focus", checkLang);
-    return () => window.removeEventListener("focus", checkLang);
+    window.addEventListener("focus", reloadSettings);
+    return () => window.removeEventListener("focus", reloadSettings);
   }, []);
 
   const saveRename = () => {

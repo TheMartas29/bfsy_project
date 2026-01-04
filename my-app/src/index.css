@@ -2,11 +2,115 @@
   box-sizing: border-box;
 }
 
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+
+  --surface: #ffffff;
+  --surface-2: #f2f2f2;
+
+  --muted: #777;
+  --muted-2: #b0b0b0;
+
+  --border: #ddd;
+  --border-2: #ccc;
+
+  --shadow: rgba(0, 0, 0, 0.12);
+  --shadow-strong: rgba(0, 0, 0, 0.25);
+
+  --primary: #111;
+  --primary-text: #fff;
+
+  --secondary: #f2f2f2;
+  --secondary-text: #333;
+
+  --danger: #ff4b4b;
+
+  --link: #0070f3;
+  --dots-bg: #555;
+
+  --overlay: rgba(0, 0, 0, 0.25);
+  --overlay-strong: rgba(0, 0, 0, 0.45);
+
+  --menu-hover: #e7e7e7;
+}
+
+body.theme-light {
+  --bg: #ffffff;
+  --text: #111111;
+
+  --surface: #ffffff;
+  --surface-2: #f2f2f2;
+
+  --muted: #777;
+  --muted-2: #b0b0b0;
+
+  --border: #ddd;
+  --border-2: #ccc;
+
+  --shadow: rgba(0, 0, 0, 0.12);
+  --shadow-strong: rgba(0, 0, 0, 0.25);
+
+  --primary: #111;
+  --primary-text: #fff;
+
+  --secondary: #f2f2f2;
+  --secondary-text: #333;
+
+  --danger: #ff4b4b;
+
+  --link: #0070f3;
+  --dots-bg: #555;
+
+  --overlay: rgba(0, 0, 0, 0.25);
+  --overlay-strong: rgba(0, 0, 0, 0.45);
+
+  --menu-hover: #e7e7e7;
+}
+
+body.theme-dark {
+  --bg: #0f1115;
+  --text: #f3f3f3;
+
+  --surface: #171a21;
+  --surface-2: #222836;
+
+  --muted: rgba(255, 255, 255, 0.65);
+  --muted-2: rgba(255, 255, 255, 0.55);
+
+  --border: rgba(255, 255, 255, 0.14);
+  --border-2: rgba(255, 255, 255, 0.22);
+
+  --shadow: rgba(0, 0, 0, 0.55);
+  --shadow-strong: rgba(0, 0, 0, 0.65);
+
+  --primary: #f3f3f3;
+  --primary-text: #111;
+
+  --secondary: rgba(255, 255, 255, 0.12);
+  --secondary-text: #f3f3f3;
+
+  --danger: #ff4b4b;
+
+  --link: #6aa6ff;
+  --dots-bg: rgba(255, 255, 255, 0.2);
+
+  --overlay: rgba(0, 0, 0, 0.45);
+  --overlay-strong: rgba(0, 0, 0, 0.55);
+
+  --menu-hover: rgba(255, 255, 255, 0.08);
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #ffffff;
-  color: #111111;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
 .overview-topbar {
@@ -14,6 +118,12 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .lang-btn {
@@ -29,9 +139,24 @@ body {
   opacity: 0.9;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
+.theme-btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.theme-btn:hover {
+  opacity: 0.9;
+}
+
+body.theme-dark .lang-btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
 }
 
 .page {
@@ -49,7 +174,7 @@ a {
 .section-title {
   font-size: 22px;
   font-weight: 600;
-  color: #b0b0b0;
+  color: var(--muted-2);
   margin: 32px 0 16px;
 }
 
@@ -63,14 +188,15 @@ a {
   width: 330px;
   height: 260px;
   border-radius: 28px;
-  background: white;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  background: var(--surface);
+  box-shadow: 0 6px 20px var(--shadow);
   position: relative;
   overflow: hidden;
+  border: 1px solid var(--border);
 }
 
 .card-main {
-  background: #f2f2f2;
+  background: var(--surface-2);
   height: 170px;
   display: flex;
   align-items: center;
@@ -80,7 +206,7 @@ a {
 .card-title {
   font-size: 26px;
   font-weight: 500;
-  opacity: 0.7;
+  opacity: 0.8;
   text-align: center;
 }
 
@@ -88,10 +214,11 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
+  background: var(--surface);
   padding: 14px 18px;
   height: 90px;
   font-size: 14px;
+  border-top: 1px solid var(--border);
 }
 
 .card-owner {
@@ -99,7 +226,7 @@ a {
 }
 
 .card-date {
-  color: #777;
+  color: var(--muted);
 }
 
 .card-delete {
@@ -109,14 +236,14 @@ a {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 1px solid #ccc;
-  background: white;
+  border: 1px solid var(--border-2);
+  background: var(--surface);
   cursor: pointer;
   font-size: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #888;
+  color: var(--muted);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
 }
 
@@ -127,20 +254,21 @@ a {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: white;
-  border: 1px solid #ddd;
+  background: var(--surface);
+  border: 1px solid var(--border);
   font-size: 40px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  color: var(--text);
 }
 
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -148,21 +276,24 @@ a {
 }
 
 .modal {
-  background: #fff;
+  background: var(--surface);
   border-radius: 20px;
   padding: 24px;
   width: 420px;
   max-width: 90%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 10px 30px var(--shadow-strong);
+  border: 1px solid var(--border);
 }
 
 .modal-input {
   width: 100%;
   padding: 12px;
   border-radius: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   font-size: 15px;
   margin-top: 8px;
+  background: var(--surface);
+  color: var(--text);
 }
 
 .modal-buttons {
@@ -177,18 +308,23 @@ a {
   border-radius: 20px;
   border: none;
   cursor: pointer;
-  background: #111;
-  color: white;
+  background: var(--primary);
+  color: var(--primary-text);
 }
 
 .btn.secondary {
-  background: #f2f2f2;
-  color: #333;
+  background: var(--secondary);
+  color: var(--secondary-text);
 }
 
 .btn.danger {
-  background: #ff4b4b;
+  background: var(--danger);
+  color: #fff;
 }
+
+/* ===========================
+   DETAIL HEADER
+   =========================== */
 
 .header {
   display: flex;
@@ -208,15 +344,17 @@ a {
   font-size: 32px;
   font-weight: 700;
   border: none;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid var(--border);
   padding: 4px 0;
   outline: none;
+  background: transparent;
+  color: var(--text);
 }
 
 .back {
   display: inline-block;
   margin-bottom: 16px;
-  color: #0070f3;
+  color: var(--link);
   text-decoration: none;
   font-size: 14px;
 }
@@ -226,8 +364,8 @@ a {
 }
 
 .dots {
-  background: #555;
-  color: white;
+  background: var(--dots-bg);
+  color: var(--text);
   font-size: 22px;
   border: none;
   width: 40px;
@@ -236,33 +374,43 @@ a {
   cursor: pointer;
 }
 
+body.theme-light .dots {
+  color: #fff;
+}
+
 .menu {
   position: absolute;
   right: 0;
   margin-top: 10px;
-  background: #f2f2f2;
+  background: var(--surface-2);
   padding: 8px 0;
   border-radius: 10px;
   width: 150px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px var(--shadow);
+  border: 1px solid var(--border);
 }
 
 .menu-item {
   padding: 10px 12px;
   cursor: pointer;
   font-size: 14px;
+  color: var(--text);
 }
 
 .menu-item:hover {
-  background: #e7e7e7;
+  background: var(--menu-hover);
 }
+
+/* ===========================
+   ITEMS / SECTIONS
+   =========================== */
 
 .section {
   margin-top: 40px;
 }
 
 .section h3 {
-  color: #999;
+  color: var(--muted-2);
   font-weight: 700;
   margin-bottom: 20px;
 }
@@ -271,14 +419,14 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border);
   padding: 12px 0;
   font-size: 15px;
 }
 
 .item-row.done span {
   text-decoration: line-through;
-  color: #777;
+  color: var(--muted);
 }
 
 .check-wrapper {
@@ -293,6 +441,7 @@ a {
   font-size: 20px;
   cursor: pointer;
   opacity: 0.6;
+  color: var(--text);
 }
 
 .delete-btn:hover {
@@ -311,16 +460,18 @@ a {
   background: none;
   border: none;
   cursor: pointer;
-  color: #666;
+  color: var(--muted);
 }
 
 .add-row input {
   flex: 1;
   padding: 10px 6px;
   border: none;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--border-2);
   font-size: 16px;
   outline: none;
+  background: transparent;
+  color: var(--text);
 }
 
 @media (max-width: 768px) {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./index.css";
 
@@ -42,17 +42,58 @@ function formatToday() {
   return new Date().toLocaleDateString("en-GB");
 }
 
+function getSystemTheme() {
+  return window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
+function applyTheme(themeSetting) {
+  // themeSetting = "system" | "light" | "dark"
+  const finalTheme = themeSetting === "system" ? getSystemTheme() : themeSetting;
+
+  document.body.classList.remove("theme-light", "theme-dark");
+  document.body.classList.add(`theme-${finalTheme}`);
+}
+
 export default function ShoppingListOverview() {
   const [lists, setLists] = useState(INITIAL_LISTS);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [listToDelete, setListToDelete] = useState(null);
   const [newTitle, setNewTitle] = useState("");
-
-  // ✅ language stored globally (for Overview + Detail)
   const [lang, setLang] = useState(() => localStorage.getItem("lang") || "en");
-
   const texts = lang === "en" ? en : cs;
   const t = (key) => texts[key] ?? key;
+  const [themeSetting, setThemeSetting] = useState(
+    () => localStorage.getItem("theme") || "system"
+  );
+
+  useEffect(() => {
+    localStorage.setItem("theme", themeSetting);
+    applyTheme(themeSetting);
+  }, [themeSetting]);
+
+  useEffect(() => {
+    if (!window.matchMedia) return;
+
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleChange = () => {
+      if (themeSetting === "system") {
+        applyTheme("system");
+      }
+    };
+
+    if (mq.addEventListener) {
+      mq.addEventListener("change", handleChange);
+      return () => mq.removeEventListener("change", handleChange);
+    } else {
+      // older browsers
+      mq.addListener(handleChange);
+      return () => mq.removeListener(handleChange);
+    }
+  }, [themeSetting]);
 
   const activeLists = lists.filter((l) => !l.archived);
   const archivedLists = lists.filter((l) => l.archived);
@@ -97,15 +138,35 @@ export default function ShoppingListOverview() {
     });
   };
 
+  const cycleTheme = () => {
+    setThemeSetting((prev) => {
+      if (prev === "system") return "light";
+      if (prev === "light") return "dark";
+      return "system";
+    });
+  };
+
+  const themeLabel =
+    themeSetting === "system"
+      ? "System"
+      : themeSetting === "light"
+      ? "Light"
+      : "Dark";
+
   return (
     <div className="page list-page">
-      {/* ✅ top bar with language toggle button */}
       <div className="overview-topbar">
         <h1 className="app-title">{t("appTitle")}</h1>
 
-        <button className="lang-btn" onClick={toggleLang}>
-          {lang === "en" ? "EN" : "CZ"}
-        </button>
+        <div className="topbar-actions">
+          <button className="lang-btn" onClick={toggleLang}>
+            {lang === "en" ? "EN" : "CZ"}
+          </button>
+
+          <button className="theme-btn" onClick={cycleTheme}>
+            {themeLabel}
+          </button>
+        </div>
       </div>
 
       <section className="list-section">
