@@ -13,28 +13,36 @@ const INITIAL_LISTS = [
     title: "My shopping list 1",
     owner: "User 1 (me)",
     createdAt: "25/10/2025",
-    archived: false
+    archived: false,
+    itemsTotal: 3,
+    itemsDone: 1
   },
   {
     id: 2,
     title: "My shopping list 2",
     owner: "User 2",
     createdAt: "25/10/2025",
-    archived: false
+    archived: false,
+    itemsTotal: 8,
+    itemsDone: 5
   },
   {
     id: 3,
     title: "My shopping list 3",
     owner: "User 3",
     createdAt: "25/10/2025",
-    archived: false
+    archived: false,
+    itemsTotal: 2,
+    itemsDone: 0
   },
   {
     id: 4,
     title: "My shopping list 1",
     owner: "User 1 (me)",
     createdAt: "25/10/2025",
-    archived: true
+    archived: true,
+    itemsTotal: 6,
+    itemsDone: 6
   }
 ];
 
@@ -50,11 +58,16 @@ function getSystemTheme() {
 }
 
 function applyTheme(themeSetting) {
-  // themeSetting = "system" | "light" | "dark"
   const finalTheme = themeSetting === "system" ? getSystemTheme() : themeSetting;
 
   document.body.classList.remove("theme-light", "theme-dark");
   document.body.classList.add(`theme-${finalTheme}`);
+}
+function getStats(list) {
+  const total = Number(list.itemsTotal || 0);
+  const done = Number(list.itemsDone || 0);
+  const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+  return { total, done, percent };
 }
 
 export default function ShoppingListOverview() {
@@ -62,9 +75,11 @@ export default function ShoppingListOverview() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [listToDelete, setListToDelete] = useState(null);
   const [newTitle, setNewTitle] = useState("");
+
   const [lang, setLang] = useState(() => localStorage.getItem("lang") || "en");
   const texts = lang === "en" ? en : cs;
   const t = (key) => texts[key] ?? key;
+
   const [themeSetting, setThemeSetting] = useState(
     () => localStorage.getItem("theme") || "system"
   );
@@ -89,7 +104,6 @@ export default function ShoppingListOverview() {
       mq.addEventListener("change", handleChange);
       return () => mq.removeEventListener("change", handleChange);
     } else {
-      // older browsers
       mq.addListener(handleChange);
       return () => mq.removeListener(handleChange);
     }
@@ -111,7 +125,9 @@ export default function ShoppingListOverview() {
       title: newTitle.trim(),
       owner: currentUser,
       createdAt: formatToday(),
-      archived: false
+      archived: false,
+      itemsTotal: 0,
+      itemsDone: 0
     };
 
     setLists([...lists, newList]);
@@ -173,29 +189,39 @@ export default function ShoppingListOverview() {
         <h2 className="section-title">{t("active")}</h2>
 
         <div className="card-grid">
-          {activeLists.map((list) => (
-            <div className="list-card" key={list.id}>
-              <Link to={`/list/${list.id}`} className="card-main">
-                <div className="card-title">{list.title}</div>
-              </Link>
+          {activeLists.map((list) => {
+            const { total, percent } = getStats(list);
 
-              <div className="card-footer">
-                <span className="card-owner">{list.owner}</span>
-                <span className="card-date">
-                  {t("createdOn")} {list.createdAt}
-                </span>
+            return (
+              <div className="list-card" key={list.id}>
+                <Link to={`/list/${list.id}`} className="card-main">
+                  <div className="card-title">
+                    <div>{list.title}</div>
+
+                    <div style={{ fontSize: 14, marginTop: 10, opacity: 0.85 }}>
+                      {total} {t("itemsLabel")} • {percent}% {t("doneLabel")}
+                    </div>
+                  </div>
+                </Link>
+
+                <div className="card-footer">
+                  <span className="card-owner">{list.owner}</span>
+                  <span className="card-date">
+                    {t("createdOn")} {list.createdAt}
+                  </span>
+                </div>
+
+                {list.owner === currentUser && (
+                  <button
+                    className="card-delete"
+                    onClick={() => setListToDelete(list)}
+                  >
+                    🗑️
+                  </button>
+                )}
               </div>
-
-              {list.owner === currentUser && (
-                <button
-                  className="card-delete"
-                  onClick={() => setListToDelete(list)}
-                >
-                  🗑️
-                </button>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -203,20 +229,30 @@ export default function ShoppingListOverview() {
         <h2 className="section-title">{t("archived")}</h2>
 
         <div className="card-grid">
-          {archivedLists.map((list) => (
-            <div className="list-card" key={list.id}>
-              <Link to={`/list/${list.id}`} className="card-main">
-                <div className="card-title">{list.title}</div>
-              </Link>
+          {archivedLists.map((list) => {
+            const { total, percent } = getStats(list);
 
-              <div className="card-footer">
-                <span className="card-owner">{list.owner}</span>
-                <span className="card-date">
-                  {t("createdOn")} {list.createdAt}
-                </span>
+            return (
+              <div className="list-card" key={list.id}>
+                <Link to={`/list/${list.id}`} className="card-main">
+                  <div className="card-title">
+                    <div>{list.title}</div>
+
+                    <div style={{ fontSize: 14, marginTop: 10, opacity: 0.85 }}>
+                      {total} items • {percent}% done
+                    </div>
+                  </div>
+                </Link>
+
+                <div className="card-footer">
+                  <span className="card-owner">{list.owner}</span>
+                  <span className="card-date">
+                    {t("createdOn")} {list.createdAt}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

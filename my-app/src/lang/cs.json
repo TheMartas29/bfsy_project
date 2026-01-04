@@ -3,18 +3,15 @@
   "active": "Aktivní",
   "archived": "Archivované",
   "createdOn": "vytvořeno",
-
   "createNewList": "Vytvořit nový seznam",
   "listTitle": "Název seznamu",
   "myShoppingList": "Můj nákupní seznam",
   "create": "Vytvořit",
   "cancel": "Zrušit",
-
   "archiveListQuestion": "Archivovat seznam?",
   "archiveListTextStart": "Tímto přesunete",
   "archiveListTextEnd": "do archivu.",
   "archive": "Archivovat",
-
   "back": "Zpět",
   "rename": "Přejmenovat",
   "members": "Členové",
@@ -23,5 +20,7 @@
   "addNew": "Přidat položku",
   "addMember": "Přidat člena",
   "add": "Přidat",
-  "close": "Zavřít"
+  "close": "Zavřít",
+  "itemsLabel": "položek",
+  "doneLabel": "hotovo"
 }
