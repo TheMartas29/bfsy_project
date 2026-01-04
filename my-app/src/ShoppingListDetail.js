@@ -5,6 +5,15 @@ import "./index.css";
 import en from "./lang/en.json";
 import cs from "./lang/cs.json";
 
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend
+} from "recharts";
+
 const INITIAL_DATA = {
   title: "My shopping list 1",
   items: [
@@ -29,6 +38,26 @@ function applyTheme(themeSetting) {
   document.body.classList.add(`theme-${finalTheme}`);
 }
 
+function CustomTooltip({ active, payload }) {
+  if (!active || !payload || !payload.length) return null;
+
+  const p = payload[0];
+  return (
+    <div
+      style={{
+        background: "var(--surface)",
+        border: "1px solid var(--border)",
+        borderRadius: 12,
+        padding: "10px 12px",
+        boxShadow: "0 10px 30px var(--shadow)",
+        color: "var(--text)"
+      }}
+    >
+      <div style={{ fontWeight: 700, marginBottom: 4 }}>{p.name}</div>
+    </div>
+  );
+}
+
 export default function ShoppingListDetail() {
   const [data, setData] = useState(INITIAL_DATA);
   const [newItem, setNewItem] = useState("");
@@ -38,12 +67,19 @@ export default function ShoppingListDetail() {
   const titleInputRef = useRef(null);
   const [membersOpen, setMembersOpen] = useState(false);
   const [newMember, setNewMember] = useState("");
+
   const [lang, setLang] = useState(() => localStorage.getItem("lang") || "en");
   const texts = lang === "en" ? en : cs;
   const t = (key) => texts[key] ?? key;
+
   const [themeSetting, setThemeSetting] = useState(
     () => localStorage.getItem("theme") || "system"
   );
+
+  const [chartColors, setChartColors] = useState({
+    done: "#0070f3",
+    todo: "#b0b0b0"
+  });
 
   useEffect(() => {
     applyTheme(themeSetting);
@@ -85,6 +121,32 @@ export default function ShoppingListDetail() {
     window.addEventListener("focus", reloadSettings);
     return () => window.removeEventListener("focus", reloadSettings);
   }, []);
+
+  useEffect(() => {
+    const updateColorsFromCss = () => {
+      const style = getComputedStyle(document.body);
+      const doneColor = style.getPropertyValue("--link").trim() || "#0070f3";
+      const todoColor =
+        style.getPropertyValue("--muted-2").trim() || "#b0b0b0";
+      setChartColors({ done: doneColor, todo: todoColor });
+    };
+
+    updateColorsFromCss();
+
+    const mq =
+      window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq) {
+      const handler = () => updateColorsFromCss();
+
+      if (mq.addEventListener) {
+        mq.addEventListener("change", handler);
+        return () => mq.removeEventListener("change", handler);
+      } else {
+        mq.addListener(handler);
+        return () => mq.removeListener(handler);
+      }
+    }
+  }, [themeSetting]);
 
   const saveRename = () => {
     if (!tempTitle.trim()) return;
@@ -139,6 +201,14 @@ export default function ShoppingListDetail() {
   const todo = data.items.filter((x) => !x.done);
   const done = data.items.filter((x) => x.done);
 
+  const chartData = [
+    { name: "Done", value: done.length },
+    { name: "Todo", value: todo.length }
+  ];
+
+  const total = done.length + todo.length;
+  const donePercent = total === 0 ? 0 : Math.round((done.length / total) * 100);
+
   return (
     <div className="page responsive-align">
       <Link to="/" className="back back-top">
@@ -189,6 +259,71 @@ export default function ShoppingListDetail() {
           )}
         </div>
       </header>
+
+      <section className="section">
+        <h3>Progress</h3>
+
+        <div
+          style={{
+            width: "100%",
+            maxWidth: 520,
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
+            borderRadius: 18,
+            padding: 18,
+            boxShadow: "0 6px 20px var(--shadow)"
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 18,
+              alignItems: "center",
+              justifyContent: "space-between"
+            }}
+          >
+            <div style={{ width: 260, maxWidth: "100%", flex: "1 1 220px" }}>
+              <ResponsiveContainer width="100%" height={220}>
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    innerRadius={50}
+                    paddingAngle={2}
+                  >
+                    <Cell fill={chartColors.done} />
+                    <Cell fill={chartColors.todo} />
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div style={{ flex: "1 1 180px", minWidth: 180 }}>
+              <div style={{ fontSize: 34, fontWeight: 800, lineHeight: 1.1 }}>
+                {donePercent}%
+              </div>
+              
+              <div style={{ marginTop: 14, color: "var(--muted)" }}>
+                <div>
+                  {t("completed")}:{" "}
+                  <strong style={{ color: "var(--text)" }}>{done.length}</strong>
+                </div>
+                <div style={{ marginTop: 6 }}>
+                  {t("todo")}:{" "}
+                  <strong style={{ color: "var(--text)" }}>{todo.length}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className="section">
         <h3>{t("todo")}</h3>
@@ -255,10 +390,7 @@ export default function ShoppingListDetail() {
             {data.members.map((m) => (
               <div key={m} className="item-row">
                 <span>{m}</span>
-                <button
-                  className="delete-btn"
-                  onClick={() => removeMember(m)}
-                >
+                <button className="delete-btn" onClick={() => removeMember(m)}>
                   🗑️
                 </button>
               </div>
